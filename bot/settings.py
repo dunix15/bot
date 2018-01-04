@@ -135,3 +135,7 @@ MEDIA_ROOT = u'/home/dunix/bot/media'
 MEDIA_URL = '/media/'
 STATIC_ROOT = u'/home/dunix/bot/static'
 STATIC_URL = '/static/'
+
+# FB messenger credentials
+ACCESS_TOKEN = "EAACGee1tcx8BAJnzGX547maADKKsNBBltLebfXPvV5oQl8OQlXCXy6gxvJ4kW1hULgCxxX3HARw7B2QdjJ7v2rpZBTqrSPnybqcDVEVmVZAXh196h4QRnwc6HrfK5rOw5kgdZAmBhtwA7dgo6vHn575Bak47lps9OQ3qwjglsMD1MZC0Wnfd"
+VERIFY_TOKEN = 'ZDA5OGE4MjY0YTdmZWY3NTU4NjM1MTEz'
