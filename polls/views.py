@@ -17,7 +17,7 @@ def reply(user_id, msg):
 
 class HandleMessageView(View):
     def get(self, request, *args, **kwargs):
-        if self.request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
+        if self.request.GET.get("hub.mode") == "subscribe" and request.GET.get("hub.challenge"):
             if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:
                 return HttpResponse(self.request.GET['hub.challenge'])
             else:
