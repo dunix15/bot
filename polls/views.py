@@ -1,7 +1,7 @@
 import json
 import requests
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.views.generic import View
 
 from bot.settings import ACCESS_TOKEN, VERIFY_TOKEN
@@ -17,10 +17,13 @@ def reply(user_id, msg):
 
 class HandleMessageView(View):
     def get(self, request, *args, **kwargs):
-        if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:
-            return HttpResponse(self.request.GET['hub.challenge'])
-        else:
-            return HttpResponse('Error, invalid token')
+        if self.request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
+            if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:
+                return HttpResponse(self.request.GET['hub.challenge'])
+            else:
+                return HttpResponseForbidden('Error, invalid token')
+
+        return HttpResponse('Bot is watching you!')
 
     # Post function to handle Facebook messages
     def post(self, request, *args, **kwargs):
