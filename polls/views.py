@@ -2,7 +2,9 @@ import json
 import requests
 
 from django.http import HttpResponse, HttpResponseForbidden
+from django.utils.decorators import method_decorator
 from django.views.generic import View
+from django.views.decorators.csrf import csrf_exempt
 
 from bot.settings import ACCESS_TOKEN, VERIFY_TOKEN
 
@@ -24,6 +26,11 @@ class HandleMessageView(View):
                 return HttpResponseForbidden('Error, invalid token')
 
         return HttpResponse('Bot is watching you!')
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return View.dispatch(self, request, *args, **kwargs)
 
     # Post function to handle Facebook messages
     def post(self, request, *args, **kwargs):
