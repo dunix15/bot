@@ -23,7 +23,7 @@ class DiscountCodeViewSet(ModelViewSet):
 
     filter_fields = ('code', 'is_active')
 
-    search_fields = ('code', 'is_active')
+    search_fields = ('code', 'fb_id', 'is_active')
 
     ordering_fields = ('code', 'is_active')
 
@@ -31,7 +31,7 @@ class DiscountCodeViewSet(ModelViewSet):
 class ClientSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Client
-        fields = ('email', 'added_time', 'discount_code')
+        fields = ('email', 'fb_id', 'added_time', 'discount_code')
 
 
 class ClientViewSet(ModelViewSet):
