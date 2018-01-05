@@ -25,7 +25,7 @@ SECRET_KEY = '9mm6q3!mq5_8f97&ja_n3_0=l128=hb&&0oh!p7o2hei2o1gkn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [u'dunix.pythonanywhere.com', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

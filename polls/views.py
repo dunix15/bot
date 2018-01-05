@@ -1,12 +1,14 @@
 import json
 import requests
-
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from bot.settings import ACCESS_TOKEN, VERIFY_TOKEN
+
+from .models import DiscountCode, Client
 
 
 def reply(user_id, msg):
@@ -35,15 +37,41 @@ class HandleMessageView(View):
     # Post function to handle Facebook messages
     def post(self, request, *args, **kwargs):
         incoming_message = json.loads(self.request.body.decode('utf-8'))
-        # Facebook recommends going through every entry since they might send
-        # multiple messages in a single call during high load
         if incoming_message['object'] == 'page':
             for entry in incoming_message['entry']:
                 for message in entry['messaging']:
                     # Check to make sure the received call is a message call
                     # This might be delivery, optin, postback for other events
                     if 'message' in message:
-                        # Print the message to the terminal
-                        reply(message['sender']['id'], message['message']['text'])
+                        fb_id = message['sender']['id']
+                        msg = message['message']['text']
+                        client = Client.objects.select_related('discount_code').fb_id(fb_id)
+                        if client:
+                            response = 'Otrzymałeś już swój kod rabatowy: {}. Dziękujemy za udział w promocji!'\
+                                .format(client[0].discount_code.code)
+                        else:
+                            code = DiscountCode.objects.active().first()
+                            if code:
+                                if '@' in msg:
+                                    if Client.objects.email(msg).exists():
+                                        response = 'E-mail {} został już wykorzystany, podaj inny.'
+                                    else:
+                                        try:
+                                            client = Client(fb_id=fb_id, email=msg, discount_code=code)
+                                            client.full_clean()
+                                            client.save()
+                                            code.is_active = False
+                                            code.save()
+
+                                            response = 'Gratuluję! Twój kod rabatowy to: {}'.format(code.code)
+
+                                        except ValidationError as e:
+                                            response = 'Wprowadź poprawny adres e-mail!'
+                                else:
+                                    response = 'Aby otrzymać kod rabatowy podaj swój e-mail!'
+                            else:
+                                response = 'Wszystkie kody rabatowe zostały wykorzystane, zapraszam później!'
+
+                        reply(fb_id, response)
 
         return HttpResponse('OK')

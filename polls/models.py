@@ -15,6 +15,7 @@ class DiscountCode(models.Model):
 
 class Client(models.Model):
     email = models.EmailField('E-mail', max_length=100)
+    fb_id = models.CharField('Facebook ID', unique=True, max_length=100)
     added_time = models.DateTimeField('Data dodania', default=timezone.now)
     discount_code = models.ForeignKey(
         DiscountCode, on_delete=models.CASCADE, verbose_name='Kod rabatowy', blank=True, null=True
